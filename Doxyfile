@@ -1,0 +1,21 @@
+PROJECT_NAME           = "Binary Signing Tool"
+PROJECT_NUMBER         = 1.0.0
+PROJECT_BRIEF          = "EdDSA binary signing and verification utility"
+
+OUTPUT_DIRECTORY       = docs
+
+INPUT                  = Core/Src \
+                         Middleware/Inc \
+                         Middleware/Src
+RECURSIVE              = YES
+FILE_PATTERNS          = *.c *.h
+
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+
+GENERATE_LATEX         = NO
+
+HAVE_DOT               = NO
