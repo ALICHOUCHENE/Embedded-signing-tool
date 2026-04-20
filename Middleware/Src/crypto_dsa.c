@@ -48,7 +48,7 @@ static void _generate_dsa_keys(crypto_dsa_private_key_t private_key,
 {
 	uint8_t seed[CRYPTO_SEED_LENGTH];
 
-	getrandom(seed, CRYPTO_SEED_LENGTH, 0);
+	getrandom(seed, CRYPTO_SEED_LENGTH, 0);          /* fill seed from kernel entropy pool */
 	crypto_eddsa_key_pair(private_key, public_key, seed);
 }
 
@@ -114,6 +114,7 @@ static void _generate_new_keys(crypto_dsa_private_key_t private_key,
 {
 	FILE *file;
 
+	mkdir("../keys", 0755);           /* ignored if directory already exists */
 	file = fopen(file_name, "w");
 	if (!file) {
 		printf("Failed to generate keys\n");
@@ -142,11 +143,11 @@ static void _load_keys_from_file(crypto_dsa_private_key_t private_key,
 	}
 
 	fgets(file_line, FILE_LINE_MAX_LENGTH, file);
-	file_line[strcspn(file_line, "\n")] = '\0';
+	file_line[strcspn(file_line, "\n")] = '\0';  /* strip trailing newline */
 	_convert_str_to_hex(file_line, private_key, CRYPTO_DSA_PRIVATE_KEY_LENGTH);
 
 	fgets(file_line, FILE_LINE_MAX_LENGTH, file);
-	file_line[strcspn(file_line, "\n")] = '\0';
+	file_line[strcspn(file_line, "\n")] = '\0';  /* strip trailing newline */
 	_convert_str_to_hex(file_line, public_key, CRYPTO_DSA_PUBLIC_KEY_LENGTH);
 
 	fclose(file);

@@ -81,10 +81,11 @@ static unsigned char *_sign_binary_file(const char *filename,
         return NULL;
     }
 
-    fseek(file, 0, SEEK_END);
+    fseek(file, 0, SEEK_END);      /* seek to end to measure file size */
     file_size = ftell(file);
     rewind(file);
 
+    /* allocate space for file content + appended footer */
     unsigned char *signed_file_buffer = malloc(file_size + sizeof(signed_file_footer_t));
     if (!signed_file_buffer) {
         fclose(file);
@@ -166,7 +167,7 @@ static bool _verify_signature(const char *filename,
         return false;
     }
 
-    fseek(file, 0, SEEK_END);
+    fseek(file, 0, SEEK_END);      /* seek to end to measure file size */
     file_size = ftell(file);
     rewind(file);
 
@@ -185,6 +186,7 @@ static bool _verify_signature(const char *filename,
         return false;
     }
 
+    /* extract footer from the end of the file */
     memcpy(&footer,
            signed_file_buffer + file_size - sizeof(footer),
            sizeof(footer));
@@ -195,6 +197,7 @@ static bool _verify_signature(const char *filename,
         return false;
     }
 
+    /* verify only the original content, not the footer itself */
     valid_signature = crypto_dsa_verify(public_key,
                                         signed_file_buffer,
                                         footer.file_length,
@@ -231,7 +234,7 @@ int main(int argc, char *argv[]) {
     }
 
     strncpy(input_file_name, argv[2], FILE_NAME_MAX_LENGTH - 1);
-    input_file_name[FILE_NAME_MAX_LENGTH - 1] = '\0';
+    input_file_name[FILE_NAME_MAX_LENGTH - 1] = '\0';  /* ensure null-termination if truncated */
     printf("binary file: %s\n", input_file_name);
 
     crypto_dsa_generate_keys(private_key, public_key);
