@@ -4,7 +4,11 @@ project(signing_tool VERSION 1.0.0 LANGUAGES C)            	# this sets the proj
 # -------------------------------------------------------------------
 # Add compile options
 # -------------------------------------------------------------------
-add_compile_options(-ffunction-sections -fdata-sections)
+add_compile_options(-Os -ffunction-sections -fdata-sections)
+# Remove -rdynamic: CMake adds it automatically on Linux, but it exports all
+# symbols to the dynamic symbol table which prevents --gc-sections from
+# eliminating unused functions.
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 add_link_options(-Wl,--gc-sections)
 add_link_options(-Wl,-Map=output.map)
 
